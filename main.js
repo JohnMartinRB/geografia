@@ -15,3 +15,14 @@ function changeSlide(direction) {
     document.getElementById("prevBtn").disabled = currentSlide === 1;
     document.getElementById("nextBtn").disabled = currentSlide === totalSlides;
 }
+
+// Agregá este código dentro de tu etiqueta <script> existente
+document.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowRight") {
+        // Flecha derecha avanza a la siguiente diapositiva
+        changeSlide(1);
+    } else if (event.key === "ArrowLeft") {
+        // Flecha izquierda retrocede a la diapositiva anterior
+        changeSlide(-1);
+    }
+});
