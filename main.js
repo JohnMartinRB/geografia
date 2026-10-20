@@ -41,8 +41,15 @@ function changeSlide(direction) {
     document.getElementById("prevBtn").disabled = currentSlide === 1;
     document.getElementById("nextBtn").disabled = currentSlide === totalSlides;
 
-    // Mantener el foco activo
-    document.getElementById("bodyRoot").focus();
+    // MAGIA ACÁ: Si pasamos a la diapositiva 6 y el gráfico no existe, lo creamos ahora que ya es visible
+    if (currentSlide === 6 && !chartInstance) {
+        setTimeout(() => {
+            initChart();
+        }, 100);
+    }
+
+    const bodyRoot = document.getElementById("bodyRoot");
+    if (bodyRoot) bodyRoot.focus();
 }
 
 // Detector global de teclado reforzado
@@ -56,148 +63,198 @@ window.addEventListener("keydown", function (event) {
     }
 });
 
-// Datos Históricos Oficiales de Población Mundial (Fuente: ONU / Our World in Data)
-const historicalData = [
-    { x: 0, y: 0.19, phase: 1 },
-    { x: 500, y: 0.19, phase: 1 },
-    { x: 1000, y: 0.29, phase: 1 },
-    { x: 1500, y: 0.45, phase: 1 },
-    { x: 1750, y: 0.79, phase: 2 },
-    { x: 1800, y: 0.98, phase: 2 },
-    { x: 1850, y: 1.26, phase: 2 },
-    { x: 1900, y: 1.65, phase: 2 },
-    { x: 1950, y: 2.52, phase: 3 },
-    { x: 1974, y: 4.0, phase: 3 },
-    { x: 2000, y: 6.14, phase: 3 },
-    { x: 2022, y: 8.0, phase: 3 },
-    { x: 2026, y: 8.15, phase: 3 },
+// Datos históricos corregidos (Año vs Población en miles de millones)
+const rawData = [
+    { year: 0, pop: 0.25, label: "Año 0", phase: "fase1", note: "Imperio Romano / Han" },
+    { year: 1000, pop: 0.31, label: "Año 1000", phase: "fase1", note: "Edad Media" },
+    { year: 1500, pop: 0.5, label: "Año 1500", phase: "fase1", note: "Renacimiento" },
+    { year: 1750, pop: 0.79, label: "1750", phase: "fase2", note: "Inicio Rev. Industrial" },
+    { year: 1800, pop: 0.98, label: "1800", phase: "fase2", note: "1.000 Millones" },
+    { year: 1900, pop: 1.65, label: "1900", phase: "fase2", note: "Avances Sanitarios" },
+    { year: 1950, pop: 2.52, label: "1950", phase: "fase3", note: "Inicio Explosión Demográfica" },
+    { year: 2000, pop: 6.13, label: "2000", phase: "fase3", note: "Crecimiento Exponencial" },
+    { year: 2026, pop: 8.15, label: "2026 (Actual)", phase: "fase3", note: "+8 Mil Millones" },
 ];
 
-let myChart = null;
+let chartInstance = null;
 
-window.addEventListener("DOMContentLoaded", () => {
+// Inicializar Chart.js
+function initChart() {
     const ctx = document.getElementById("populationChart").getContext("2d");
 
-    // Degradado cian/púrpura para el área bajo la curva
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    // Gradient para la línea del gráfico
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, "rgba(6, 182, 212, 0.4)");
-    gradient.addColorStop(1, "rgba(139, 92, 246, 0.0)");
+    gradient.addColorStop(0.5, "rgba(59, 130, 246, 0.1)");
+    gradient.addColorStop(1, "rgba(139, 92, 246, 0)");
 
-    myChart = new Chart(ctx, {
+    chartInstance = new Chart(ctx, {
         type: "line",
         data: {
+            labels: rawData.map((d) => d.year),
             datasets: [
                 {
                     label: "Población Mundial (Miles de Millones)",
-                    data: historicalData,
-                    borderColor: "#06b6d4",
+                    data: rawData.map((d) => ({ x: d.year, y: d.pop, note: d.note })),
+                    borderColor: "#06B6D4",
                     borderWidth: 3,
-                    backgroundColor: gradient,
+                    pointBackgroundColor: "#3B82F6",
+                    pointBorderColor: "#0B0F19",
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
                     fill: true,
+                    backgroundColor: gradient,
                     tension: 0.35,
-                    pointBackgroundColor: "#06b6d4",
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
                 },
             ],
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    backgroundColor: "rgba(17, 24, 39, 0.95)",
+                    titleColor: "#06B6D4",
+                    bodyColor: "#F3F4F6",
+                    borderColor: "#1F2937",
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        title: function (context) {
+                            const item = rawData[context[0].dataIndex];
+                            return `Año ${item.year} (${item.note})`;
+                        },
+                        label: function (context) {
+                            return `Población estimada: ${context.parsed.y} mil millones`;
+                        },
+                    },
+                },
+            },
             scales: {
                 x: {
                     type: "linear",
                     position: "bottom",
+                    min: 0,
+                    max: 2050,
                     title: {
                         display: true,
-                        text: "Año Histórico",
-                        color: "#94a3b8",
+                        text: "Línea de Tiempo (Años a escala real)",
+                        color: "#9CA3AF",
+                        font: { size: 12, family: "Inter" },
                     },
                     ticks: {
-                        color: "#94a3b8",
+                        color: "#6B7280",
+                        stepSize: 250,
                         callback: function (value) {
                             return value === 0 ? "Año 0" : value;
                         },
                     },
-                    grid: { color: "rgba(255, 255, 255, 0.05)" },
+                    grid: {
+                        color: "rgba(255, 255, 255, 0.05)",
+                    },
                 },
                 y: {
+                    min: 0,
+                    max: 9,
                     title: {
                         display: true,
                         text: "Habitantes (Miles de Millones)",
-                        color: "#94a3b8",
+                        color: "#9CA3AF",
+                        font: { size: 12, family: "Inter" },
                     },
-                    min: 0,
-                    max: 9,
                     ticks: {
-                        color: "#94a3b8",
-                        stepSize: 2,
-                    },
-                    grid: { color: "rgba(255, 255, 255, 0.05)" },
-                },
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return `Población: ${context.parsed.y} mil millones`;
+                        color: "#6B7280",
+                        stepSize: 1,
+                        callback: function (value) {
+                            return value + " mil M";
                         },
+                    },
+                    grid: {
+                        color: "rgba(255, 255, 255, 0.05)",
                     },
                 },
             },
         },
     });
-});
+}
 
-// Función para filtrar fases y cambiar textos explicativos
-function filterPhase(phaseKey) {
-    const buttons = ["all", "fase1", "fase2", "fase3"];
-    buttons.forEach((key) => {
-        const btn = document.getElementById(`btn-${key}`);
-        if (key === phaseKey) {
-            btn.style.background = "var(--accent-cyan)";
-            btn.style.color = "#000";
-            btn.style.fontWeight = "bold";
+// Filtrar fases y actualizar información dinámica
+function filterPhase(phase) {
+    // Actualización de estilos de botones
+    ["all", "fase1", "fase2", "fase3"].forEach((p) => {
+        const btn = document.getElementById(`btn-${p}`);
+        if (p === phase) {
+            btn.className =
+                "px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-cyan-500 text-black shadow-lg shadow-cyan-500/20";
         } else {
-            btn.style.background = "rgba(15, 23, 42, 0.6)";
-            btn.style.color = "#cbd5e1";
-            btn.style.fontWeight = "normal";
+            btn.className =
+                "px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700";
         }
     });
 
+    const infoBox = document.getElementById("info-box");
     const infoTitle = document.getElementById("info-title");
     const infoContent = document.getElementById("info-content");
 
-    if (phaseKey === "all") {
-        myChart.data.datasets[0].data = historicalData;
+    if (phase === "all") {
         infoTitle.innerText = "¿Por qué este gráfico es conceptualmente correcto?";
         infoContent.innerHTML = `
-                        <p><strong>1. Gráfico de línea continua vs. Barras:</strong> La población humana es un fenómeno dinámico histórico. La línea continua muestra la progresión fluida a través del tiempo, permitiendo apreciar la famosa <em>"Curva en J"</em>.</p>
-                        <p><strong>2. Escala temporal real (Eje X):</strong> Los años guardan su verdadera distancia proporcional. Se observa que la población tardó más de 17 siglos en alcanzar los primeros 1.000 millones, y solo ~200 años en multiplicarse por 8.</p>
-                        <p><strong>3. Eje Y preciso:</strong> Expresa la población real en miles de millones (0 a 8.1 mil millones), eliminando cualquier ambigüedad.</p>
-                    `;
-    } else if (phaseKey === "fase1") {
-        myChart.data.datasets[0].data = historicalData.filter((d) => d.phase === 1);
-        infoTitle.innerText = "Fase 1: Lento Crecimiento (Año 0 al 1750)";
+          <p><strong>1. Gráfico de línea continua vs. Barras:</strong> La población humana es un fenómeno dinámico e histórico continuo. Un gráfico de líneas muestra la progresión fluida a través del tiempo, permitiendo apreciar la famosa <em>"Curva en J"</em>.</p>
+          <p><strong>2. Escala temporal real (Eje X):</strong> A diferencia de las barras desconectadas del gráfico anterior, aquí los años guardan su verdadera distancia proporcional. Se observa claramente que la población tardó más de 17 siglos en alcanzar los primeros 1.000 millones, y solo ~200 años en multiplicarse por 8.</p>
+          <p><strong>3. Eje Y preciso:</strong> Expresa la población real en miles de millones (de 0 a 8.1 mil millones), eliminando cualquier ambigüedad de lectura.</p>
+        `;
+        chartInstance.data.datasets[0].pointRadius = rawData.map(() => 6);
+        chartInstance.data.datasets[0].pointBackgroundColor = rawData.map(() => "#3B82F6");
+    } else if (phase === "fase1") {
+        infoTitle.innerText = "Fase 1: Lento Crecimiento (Antigüedad y Edad Media)";
         infoContent.innerHTML = `
-                        <p><strong>Régimen Demográfico Antiguo:</strong> Altas tasas de natalidad acompañadas por altas tasas de mortalidad debido a epidemias, guerras y hambrunas periódicas.</p>
-                        <p>La curva se mantiene casi plana durante más de 17 siglos, tardando miles de años en aproximarse a los 800 millones de habitantes.</p>
-                    `;
-    } else if (phaseKey === "fase2") {
-        myChart.data.datasets[0].data = historicalData.filter((d) => d.phase <= 2);
-        infoTitle.innerText = "Fase 2: Despegue Industrial (1750 al 1950)";
+          <p>Durante casi 2000 años, el crecimiento demográfico fue sumamente lento y casi plano. Las altas tasas de natalidad eran compensadas por elevadísimas tasas de mortalidad debido a guerras, hambrunas y epidemias (como la Peste Negra en el siglo XIV).</p>
+          <p class="text-cyan-400 font-medium">Población en el Año 1750: ~790 millones de habitantes.</p>
+        `;
+        highlightPoints("fase1");
+    } else if (phase === "fase2") {
+        infoTitle.innerText = "Fase 2: Despegue Industrial (1750 - 1950)";
         infoContent.innerHTML = `
-                        <p><strong>Inicio de la Transición Demográfica:</strong> La Revolución Industrial introduce alcantarillado, agua potable, vacunas y producción agrícola a gran escala.</p>
-                        <p>La mortalidad cae drásticamente mientras la natalidad se mantiene alta, haciendo que la población alcance sus primeros 1.000 millones hacia 1804 y 2.500 millones en 1950.</p>
-                    `;
-    } else if (phaseKey === "fase3") {
-        myChart.data.datasets[0].data = historicalData;
-        infoTitle.innerText = "Fase 3: Explosión Demográfica (1950 al Presente)";
+          <p>Con el inicio de la Revolución Industrial en Europa y el desarrollo de la medicina moderna (vacunas, potabilización del agua, asepsia), la mortalidad cayó drásticamente mientras la natalidad se mantuvo alta.</p>
+          <p class="text-cyan-400 font-medium">Hito histórico: En torno a 1800, la humanidad supera por primera vez los 1.000 millones de habitantes.</p>
+        `;
+        highlightPoints("fase2");
+    } else if (phase === "fase3") {
+        infoTitle.innerText = "Fase 3: La Explosión Demográfica (1950 - Actualidad)";
         infoContent.innerHTML = `
-                        <p><strong>Crecimiento Exponencial Explicitado:</strong> Globalización de la medicina moderna, antibióticos y avances de salud pública en países en desarrollo.</p>
-                        <p>La curva se torna prácticamente vertical: la población mundial pasa de 2.500 millones en 1950 a superar los 8.000 millones en la actualidad.</p>
-                    `;
+          <p>La curva se vuelve prácticamente vertical. La expansión de la salud pública global y mejoras en la producción agrícola (Revolución Verde) permitieron duplicar la población mundial en tiempo récord: de 2.500 millones en 1950 a más de 8.000 millones en la actualidad.</p>
+          <p class="text-purple-400 font-medium">Población actual (2026): ~8.150 millones de habitantes.</p>
+        `;
+        highlightPoints("fase3");
     }
-    myChart.update();
+
+    chartInstance.update();
 }
+
+function highlightPoints(phase) {
+    chartInstance.data.datasets[0].pointRadius = rawData.map((d) => (d.phase === phase ? 10 : 4));
+    chartInstance.data.datasets[0].pointBackgroundColor = rawData.map((d) =>
+        d.phase === phase ? "#06B6D4" : "#3B82F6",
+    );
+}
+
+function handleNav(direction) {
+    alert(`Navegación simulada: ${direction.toUpperCase()}`);
+}
+
+// Cargar gráfico al iniciar
+// Inicializar Chart.js y asegurar el foco al cargar la página
+window.onload = function () {
+    const bodyRoot = document.getElementById("bodyRoot");
+    if (bodyRoot) bodyRoot.focus();
+
+    // Inicializamos el gráfico con un pequeño delay para que tome el tamaño correcto
+    setTimeout(() => {
+        initChart();
+    }, 200);
+};
