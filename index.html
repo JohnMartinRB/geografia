@@ -6,22 +6,8 @@
         <title>Presentación Geografía - Grupo 1: Crecimiento de la Población Mundial</title>
         <link rel="stylesheet" href="style.css" />
         <script src="main.js"></script>
-
-        <!-- Tailwind CSS -->
-        <script src="https://cdn.tailwindcss.com"></script>
-
-        <!-- Chart.js -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <!-- Google Fonts: Inter -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
     </head>
-    <body id="bodyRoot">
+    <body>
         <div class="deck-container">
             <!-- DIAPOSITIVA 1: Portada -->
             <div class="slide slide-1 active" id="slide-1">
@@ -190,112 +176,59 @@
                 </div>
             </div>
 
-            <!-- DIAPOSITIVA 6: Análisis Recurso 1 (Gráfico Técnico Unificado) -->
+            <!-- DIAPOSITIVA 6: Análisis Recurso 1 (Gráfico simplificado y amigable) -->
             <div class="slide slide-6" id="slide-6">
                 <div class="slide-header">
                     <div class="slide-title">Análisis Geográfico: Gráfico de Población Histórica</div>
                     <span class="slide-number" style="color: var(--accent-purple)">Slide 06</span>
                 </div>
-                <!-- Card Principal: Gráfico -->
-                <section class="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden">
-                    <!-- Glow decorativo de fondo -->
-                    <div
-                        class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
-                    ></div>
-                    <div
-                        class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"
-                    ></div>
+                <div class="slide-6-content">
+                    <div class="simple-chart-card">
+                        <h3 style="color: var(--accent-cyan); font-size: 1.3rem; margin-bottom: 5px">
+                            Esquema Visual de la Explosión Demográfica
+                        </h3>
+                        <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 10px">
+                            Visualización simplificada de la curva de crecimiento poblacional histórico:
+                        </p>
 
-                    <!-- Título de la diapositiva -->
-                    <div class="text-center max-w-2xl mx-auto mb-6">
-                        <h2
-                            class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500"
+                        <div class="chart-visual">
+                            <div class="chart-bar" style="height: 20%">Año 0</div>
+                            <div class="chart-bar" style="height: 30%">1500</div>
+                            <div class="chart-bar" style="height: 50%">1800</div>
+                            <div class="chart-bar" style="height: 100%">Actual</div>
+                        </div>
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-around;
+                                font-size: 0.95rem;
+                                color: var(--accent-cyan);
+                                font-weight: bold;
+                                max-width: 700px;
+                                margin: 0 auto;
+                            "
                         >
-                            Esquema Correcto de la Explosión Demográfica
-                        </h2>
-                        <p class="text-sm md:text-base text-gray-400 mt-2">
-                            Curva continua en "J" del crecimiento poblacional humano a escala temporal proporcional.
+                            <span>Lento crecimiento (Antigüedad)</span>
+                            <span>Despegue Industrial (1750+)</span>
+                            <span>Explosión demográfica (8 mil millones)</span>
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            background: rgba(15, 23, 42, 0.85);
+                            padding: 20px;
+                            border-radius: 16px;
+                            border-left: 6px solid var(--accent-cyan);
+                        "
+                    >
+                        <p style="font-size: 1.15rem; color: #f8fafc">
+                            <strong>Análisis claro:</strong> Durante siglos la población se mantuvo estable y con
+                            crecimiento lento (línea casi plana). A partir de 1750, gracias a la Revolución Industrial y
+                            los avances médicos, la curva asciende de forma vertical ("explosión demográfica"),
+                            superando los 8 mil millones de habitantes en la actualidad.
                         </p>
                     </div>
-
-                    <!-- Controles / Selector de Fases -->
-                    <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button
-                            id="btn-all"
-                            onclick="filterPhase('all')"
-                            class="px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-cyan-500 text-black shadow-lg shadow-cyan-500/20"
-                        >
-                            Vista Completa (Curva en J)
-                        </button>
-                        <button
-                            id="btn-fase1"
-                            onclick="filterPhase('fase1')"
-                            class="px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700"
-                        >
-                            1. Lento Crecimiento (Año 0 - 1750)
-                        </button>
-                        <button
-                            id="btn-fase2"
-                            onclick="filterPhase('fase2')"
-                            class="px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700"
-                        >
-                            2. Despegue Industrial (1750 - 1950)
-                        </button>
-                        <button
-                            id="btn-fase3"
-                            onclick="filterPhase('fase3')"
-                            class="px-4 py-2 text-xs md:text-sm rounded-xl font-medium transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700"
-                        >
-                            3. Explosión Demográfica (1950 - Actual)
-                        </button>
-                    </div>
-
-                    <!-- Canvas del Gráfico -->
-                    <div class="relative w-full h-[320px] md:h-[400px]">
-                        <canvas id="populationChart"></canvas>
-                    </div>
-                </section>
-
-                <!-- Card Secundario: Explicación Técnica y Conceptual -->
-                <section
-                    id="info-box"
-                    class="glass-card rounded-2xl p-6 md:p-8 transition-all duration-500 border-l-4 border-cyan-400"
-                >
-                    <div class="flex items-start space-x-4">
-                        <div class="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                        </div>
-                        <div class="space-y-3">
-                            <h3 id="info-title" class="text-lg md:text-xl font-semibold text-white">
-                                ¿Por qué este gráfico es conceptualmente correcto?
-                            </h3>
-                            <div id="info-content" class="text-sm md:text-base text-gray-300 space-y-2 leading-relaxed">
-                                <p>
-                                    <strong>1. Gráfico de línea continua vs. Barras:</strong> La población humana es un
-                                    fenómeno dinámico e histórico continuo. Un gráfico de líneas muestra la progresión
-                                    fluida a través del tiempo, permitiendo apreciar la famosa <em>"Curva en J"</em>.
-                                </p>
-                                <p>
-                                    <strong>2. Escala temporal real (Eje X):</strong> A diferencia de las barras
-                                    desconectadas del gráfico anterior, aquí los años guardan su verdadera distancia
-                                    proporcional. Se observa claramente que la población tardó más de 17 siglos en
-                                    alcanzar los primeros 1.000 millones, y solo ~200 años en multiplicarse por 8.
-                                </p>
-                                <p>
-                                    <strong>3. Eje Y preciso:</strong> Expresa la población real en miles de millones
-                                    (de 0 a 8.1 mil millones), eliminando cualquier ambigüedad de lectura.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                </div>
             </div>
 
             <!-- DIAPOSITIVA 7: Análisis Recurso 2 -->
