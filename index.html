@@ -6,6 +6,7 @@
         <title>Presentación Geografía - Grupo 1: Crecimiento de la Población Mundial</title>
         <link rel="stylesheet" href="style.css" />
         <script src="main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <div class="deck-container">
@@ -176,7 +177,7 @@
                 </div>
             </div>
 
-            <!-- DIAPOSITIVA 6: Análisis Recurso 1 (Gráfico simplificado y amigable) -->
+            <!-- DIAPOSITIVA 6: Análisis Recurso 1 (Gráfico simplificado y amigable)
             <div class="slide slide-6" id="slide-6">
                 <div class="slide-header">
                     <div class="slide-title">Análisis Geográfico: Gráfico de Población Histórica</div>
@@ -226,6 +227,47 @@
                             crecimiento lento (línea casi plana). A partir de 1750, gracias a la Revolución Industrial y
                             los avances médicos, la curva asciende de forma vertical ("explosión demográfica"),
                             superando los 8 mil millones de habitantes en la actualidad.
+                        </p>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- DIAPOSITIVA 6: Análisis Recurso 1 (Gráfico Dinámico con Chart.js) -->
+            <div class="slide slide-6" id="slide-6">
+                <div class="slide-header">
+                    <div class="slide-title">Análisis Geográfico: Gráfico de Población Histórica</div>
+                    <span class="slide-number" style="color: var(--accent-purple)">Slide 06</span>
+                </div>
+                <div class="slide-6-content-chart">
+                    <!-- Controles de Filtro de Fases -->
+                    <div class="chart-controls">
+                        <button id="btn-all" onclick="filterPhase('all')" class="chart-btn active-filter">
+                            Vista Completa (Curva en J)
+                        </button>
+                        <button id="btn-fase1" onclick="filterPhase('fase1')" class="chart-btn">
+                            1. Lento Crecimiento (Año 0 - 1750)
+                        </button>
+                        <button id="btn-fase2" onclick="filterPhase('fase2')" class="chart-btn">
+                            2. Despegue Industrial (1750 - 1950)
+                        </button>
+                        <button id="btn-fase3" onclick="filterPhase('fase3')" class="chart-btn">
+                            3. Explosión Demográfica (1950 - Actualidad)
+                        </button>
+                    </div>
+
+                    <!-- Canvas del Gráfico -->
+                    <div class="chart-container-wrapper">
+                        <canvas id="populationChart"></canvas>
+                    </div>
+
+                    <!-- Caja de Información Dinámica -->
+                    <div class="chart-info-box" id="info-box-dynamic">
+                        <h4 id="info-title" style="color: var(--accent-cyan); margin-bottom: 5px">
+                            ¿Por qué este gráfico es conceptualmente correcto?
+                        </h4>
+                        <p id="info-content" style="font-size: 1.05rem; color: var(--text-muted)">
+                            Utiliza una línea continua y escala temporal real para apreciar la <em>"Curva en J"</em> de
+                            la población mundial.
                         </p>
                     </div>
                 </div>
