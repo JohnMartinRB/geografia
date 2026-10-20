@@ -16,13 +16,11 @@ function changeSlide(direction) {
     document.getElementById("nextBtn").disabled = currentSlide === totalSlides;
 }
 
-// Agregá este código dentro de tu etiqueta <script> existente
+// Función global de teclado para avanzar/retroceder con flechas
 document.addEventListener("keydown", function (event) {
-    if (event.key === "ArrowRight") {
-        // Flecha derecha avanza a la siguiente diapositiva
+    if (event.key === "ArrowRight" || event.key === "PageDown") {
         changeSlide(1);
-    } else if (event.key === "ArrowLeft") {
-        // Flecha izquierda retrocede a la diapositiva anterior
+    } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
         changeSlide(-1);
     }
 });
